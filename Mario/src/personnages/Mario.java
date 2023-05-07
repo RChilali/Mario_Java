@@ -6,8 +6,9 @@ import javax.swing.ImageIcon;
 
 import jeu.Main;
 import objets.Objet;
+import objets.Obstacle;
 
-public class Mario extends Personnage{
+public class Mario extends Personnage {
 
 
     //**** VARIABLES ****//
@@ -29,16 +30,22 @@ public class Mario extends Personnage{
 
 
     //**** GETTERS ****//
-    public Image getImgMario() {return imgMario;}
+    public Image getImgMario() {
+        return imgMario;
+    }
 
-    public boolean isSaut() {return saut;}
+    public boolean isSaut() {
+        return saut;
+    }
 
 
     //**** SETTERS ****//
-    public void setSaut(boolean saut) {this.saut = saut;}
+    public void setSaut(boolean saut) {
+        this.saut = saut;
+    }
 
     //**** METHODES ****//
-    public Image saute(){
+    public Image saute() {
 
         ImageIcon ico;
         Image img;
@@ -46,21 +53,34 @@ public class Mario extends Personnage{
 
         this.compteurSaut++;
         // Montée du saut
-        if(this.compteurSaut <= 40){
-            if(this.getY() > Main.scene.getHautPlafond()){this.setY(this.getY() - 4);}
-            else{this.compteurSaut = 41;}
-            if(this.isVersDroite() == true){str = "/images/marioSautDroite.png";}
-            else{str = "/images/marioSautGauche.png";}
+        if (this.compteurSaut <= 40) {
+            if (this.getY() > Main.scene.getHautPlafond()) {
+                this.setY(this.getY() - 4);
+            } else {
+                this.compteurSaut = 41;
+            }
+            if (this.isVersDroite() == true) {
+                str = "/images/marioSautDroite.png";
+            } else {
+                str = "/images/marioSautGauche.png";
+            }
 
             // Retombée du saut
-        }else if(this.getY() + this.getHauteur() < Main.scene.getySol()){this.setY(this.getY() + 1);
-            if(this.isVersDroite() == true){str = "/images/marioSautDroite.png";}
-            else{str = "/images/marioSautGauche.png";}
+        } else if (this.getY() + this.getHauteur() < Main.scene.getySol()) {
+            this.setY(this.getY() + 1);
+            if (this.isVersDroite() == true) {
+                str = "/images/marioSautDroite.png";
+            } else {
+                str = "/images/marioSautGauche.png";
+            }
 
             // Saut terminé
-        }else{
-            if(this.isVersDroite() == true){str = "/images/marioArretDroite.png";}
-            else{str = "/images/marioArretGauche.png";}
+        } else {
+            if (this.isVersDroite() == true) {
+                str = "/images/marioArretDroite.png";
+            } else {
+                str = "/images/marioArretGauche.png";
+            }
             this.saut = false;
             this.compteurSaut = 0;
         }
@@ -71,23 +91,38 @@ public class Mario extends Personnage{
     }
 
     public void contact(Objet objet) {
+
         // contact horizontal
-        if((super.contactAvant(objet) == true && this.isVersDroite() == true) || (super.contactArriere(objet) == true && this.isVersDroite() == false)){
+        if ((super.contactAvant(objet) == true && this.isVersDroite() == true) || (super.contactArriere(objet) == true && this.isVersDroite() == false)) {
+            if (objet instanceof Obstacle) {
+                Main.over();
+            }
             Main.scene.setDx(0);
             this.setMarche(false);
         }
         // contact avec un objet en dessous
-        if(super.contactDessous(objet) == true && this.saut == true){ // Mario saute sur un objet
+        if (super.contactDessous(objet) == true && this.saut == true) { // Mario saute sur un objet
             Main.scene.setySol(objet.getY());
-        }else if(super.contactDessous(objet) == false){ // Mario tombe sur le sol initial
+        } else if (super.contactDessous(objet) == false) { // Mario tombe sur le sol initial
             Main.scene.setySol(293); // altitude du sol initial
-            if(this.saut == false){this.setY(243);} // altitude initiale de Mario
+            if (this.saut == false) {
+                this.setY(243);
+            } // altitude initiale de Mario
         }
         // contact avec un objet au-dessus
-        if(super.contactDessus(objet) == true){
+        if (super.contactDessus(objet) == true) {
             Main.scene.setHautPlafond(objet.getY() + objet.getHauteur()); // le plafond devient le dessous de l'objet
-        }else if(super.contactDessus(objet) == false && this.saut == false){
+        } else if (super.contactDessus(objet) == false && this.saut == false) {
             Main.scene.setHautPlafond(0);// altitude du plafond initial (ciel)
         }
+    }
+
+    public boolean contactObstacle(Obstacle obstacle) {
+        if (super.contactDessous(obstacle)) {
+            return true;
+        } else if ((super.contactAvant(obstacle) && this.isVersDroite()) || (super.contactArriere(obstacle) && !this.isVersDroite())) {
+            Main.over();
+        }
+        return false;
     }
 }

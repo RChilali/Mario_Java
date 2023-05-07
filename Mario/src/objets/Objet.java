@@ -6,6 +6,7 @@ import javax.swing.ImageIcon;
 
 import jeu.Main;
 
+
 public class Objet {
 
     //**** VARIABLES ****//

@@ -1,16 +1,12 @@
 package jeu;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import objets.Bloc;
-import objets.Objet;
-import objets.TuyauRouge;
+import objets.*;
 import personnages.Mario;
 
 
@@ -62,15 +58,20 @@ public class Scene extends JPanel {
     public Bloc bloc11;
     public Bloc bloc12;
 
+    public Obstacle obstacle1;
+
     private ImageIcon icoDrapeau;
     private Image imgDrapeau;
     private ImageIcon icoChateauFin;
     private Image imgChateauFin;
 
     private ArrayList<Objet> tabObjets; // tableau qui enregistre tous les objets du jeu
+    private ArrayList<Piece> tableauDePieces;
+
+    private ArrayList<Obstacle> tableauObstacles;
 
     //**** CONSTRUCTEUR ****//
-    public Scene(){
+    public Scene() {
 
         super();
 
@@ -114,6 +115,7 @@ public class Scene extends JPanel {
         bloc11 = new Bloc(4200, 200);
         bloc12 = new Bloc(4300, 210);
 
+
         this.icoChateauFin = new ImageIcon(getClass().getResource("/images/chateauFin.png"));
         this.imgChateauFin = this.icoChateauFin.getImage();
 
@@ -144,73 +146,142 @@ public class Scene extends JPanel {
         this.tabObjets.add(this.bloc11);
         this.tabObjets.add(this.bloc12);
 
+
+        tableauDePieces = new ArrayList<>();
+        tableauDePieces.add(new Piece(402, 145));
+        tableauDePieces.add(new Piece(1202, 140));
+        tableauDePieces.add(new Piece(1272, 95));
+        tableauDePieces.add(new Piece(1342, 40));
+        tableauDePieces.add(new Piece(1650, 145));
+        tableauDePieces.add(new Piece(2650, 145));
+        tableauDePieces.add(new Piece(3000, 135));
+        tableauDePieces.add(new Piece(3400, 125));
+        tableauDePieces.add(new Piece(4200, 145));
+        tableauDePieces.add(new Piece(4600, 40));
+
+        tableauObstacles = new ArrayList<>();
+        tableauObstacles.add(new Obstacle(800, 263));
+        tableauObstacles.add(new Obstacle(950, 263));
+        tableauObstacles.add(new Obstacle(1180, 263));
+        tableauObstacles.add(new Obstacle(1350, 263));
+        tableauObstacles.add(new Obstacle(1900, 263));
+        tableauObstacles.add(new Obstacle(2400, 263));
+        tableauObstacles.add(new Obstacle(4100, 263));
+
         this.setFocusable(true);
         this.requestFocusInWindow();
-        this.addKeyListener(new Clavier());
 
+        this.addKeyListener(new Clavier());
         Thread chronoEcran = new Thread(new Chrono());
         chronoEcran.start();
+
     }
 
 
     //**** GETTERS ****//
-    public int getDx() {return dx;}
+    public int getDx() {
+        return dx;
+    }
 
-    public int getxPos() {return xPos;}
+    public int getxPos() {
+        return xPos;
+    }
 
-    public int getySol() {return ySol;}
+    public int getySol() {
+        return ySol;
+    }
 
-    public int getHautPlafond(){return hauteurPlafond;}
+    public int getHautPlafond() {
+        return hauteurPlafond;
+    }
 
 
     //**** SETTERS ****//
-    public void setDx(int dx) {this.dx = dx;}
+    public void setDx(int dx) {
+        this.dx = dx;
+    }
 
-    public void setxPos(int xPos) {this.xPos = xPos;}
+    public void setxPos(int xPos) {
+        this.xPos = xPos;
+    }
 
-    public void setySol(int ySol) {this.ySol = ySol;}
+    public void setySol(int ySol) {
+        this.ySol = ySol;
+    }
 
-    public void setHautPlafond(int hauteurPlafond) {this.hauteurPlafond = hauteurPlafond;}
+    public void setHautPlafond(int hauteurPlafond) {
+        this.hauteurPlafond = hauteurPlafond;
+    }
 
-    public void setxFond1(int xFond1) {this.xFond1 = xFond1;}
+    public void setxFond1(int xFond1) {
+        this.xFond1 = xFond1;
+    }
 
-    public void setxFond2(int xFond2) {this.xFond2 = xFond2;}
+    public void setxFond2(int xFond2) {
+        this.xFond2 = xFond2;
+    }
 
 
     //**** METHODES ****//
-    public void deplacementFond(){ // Déplacement des images "fixes" de l'écran simulant le déplacement de mario
+    public void deplacementFond() { // Déplacement des images "fixes" de l'écran simulant le déplacement de mario
 
-        if(this.xPos >= 0 && this.xPos <= 4430){
+        if (this.xPos >= 0 && this.xPos <= 4430) {
             // Mise à jour des positions des éléments du jeu lors du déplacement de mario
             this.xPos = this.xPos + this.dx;
             this.xFond1 = this.xFond1 - this.dx;
             this.xFond2 = this.xFond2 - this.dx;
         }
         // Permanence du fond d'écran
-        if(this.xFond1 == -800){this.xFond1 = 800;}
-        else if(this.xFond2 == -800){this.xFond2 = 800;}
-        else if(this.xFond1 == 800){this.xFond1 = -800;}
-        else if(this.xFond2 == 800){this.xFond2 = -800;}
+        if (this.xFond1 == -800) {
+            this.xFond1 = 800;
+        } else if (this.xFond2 == -800) {
+            this.xFond2 = 800;
+        } else if (this.xFond1 == 800) {
+            this.xFond1 = -800;
+        } else if (this.xFond2 == 800) {
+            this.xFond2 = -800;
+        }
     }
 
 
     public void paintComponent(Graphics g) { // Dessin de toutes les images visibles à l'écran (appel toutes les 3 ms environ)
 
         super.paintComponent(g);
-        Graphics g2 = (Graphics2D)g;
+        Graphics g2 = (Graphics2D) g;
 
         // Détections des contacts avec des objets
-        for(int i = 0; i < this.tabObjets.size(); i++){
+        for (int i = 0; i < this.tabObjets.size(); i++) {
             // mario
-            if(this.mario.proche(this.tabObjets.get(i))){this.mario.contact(this.tabObjets.get(i));}
+            if (this.mario.proche(this.tabObjets.get(i))) {
+                this.mario.contact(this.tabObjets.get(i));
+            }
+        }
+        // Détections des contacts avec les pièces
+        tableauDePieces.removeIf(piece -> this.mario.toucher(piece));
+
+        //Détections des contacts avec les obstacles
+        tableauObstacles.removeIf(obstacle -> this.mario.contactObstacle(obstacle));
+
+        // Détections de fin de partie
+        if (xPos == 4360) {
+            Main.win();
         }
 
         // Déplacement de tous les objets "fixes" du jeu
 
         this.deplacementFond();
-        if(this.xPos >= 0 && this.xPos <= 4430){
-            for(int i = 0; i < this.tabObjets.size(); i++){this.tabObjets.get(i).deplacement();}
+        if (this.xPos >= 0 && this.xPos <= 4430) {
+            for (int i = 0; i < this.tabObjets.size(); i++) {
+                this.tabObjets.get(i).deplacement();
+            }
         }
+
+        // Déplacement des pièces
+        tableauDePieces.forEach(Objet::deplacement);
+
+        // déplacement des obstacles
+        tableauObstacles.forEach(Objet::deplacement);
+
         // Image de fond
         g2.drawImage(this.imgFond1, this.xFond1, 0, null);
         g2.drawImage(this.imgFond2, this.xFond2, 0, null);
@@ -221,9 +292,13 @@ public class Scene extends JPanel {
         g2.drawImage(this.imgDepart, 220 - this.xPos, 234, null);
 
         // Images des objets
-        for(int i = 0; i < this.tabObjets.size(); i++){
+        for (int i = 0; i < this.tabObjets.size(); i++) {
             g2.drawImage(this.tabObjets.get(i).getImgObjet(), this.tabObjets.get(i).getX(), this.tabObjets.get(i).getY(), null);
         }
+        // images des pieces
+        tableauDePieces.forEach((piece -> g2.drawImage(piece.getImgPiece(), piece.getX(), piece.getY(), null)));
+        //images des obstacles
+        tableauObstacles.forEach(obstacle -> g2.drawImage(obstacle.getImgObjet(), obstacle.getX(), obstacle.getY(), null) );
 
         // Image du drapeau d'arrivée
         g2.drawImage(imgDrapeau, 4650 - this.xPos, 115, null);
@@ -231,7 +306,15 @@ public class Scene extends JPanel {
         g2.drawImage(imgChateauFin, 5000 - this.xPos, 145, null);
 
         // Image de mario
-        if(this.mario.isSaut()){g2.drawImage(this.mario.saute(), this.mario.getX(), this.mario.getY(), null);}
-        else{g2.drawImage(this.mario.marche("mario", 25), this.mario.getX(), this.mario.getY(), null);}
+        if (this.mario.isSaut()) {
+            g2.drawImage(this.mario.saute(), this.mario.getX(), this.mario.getY(), null);
+        } else {
+            g2.drawImage(this.mario.marche("mario", 25), this.mario.getX(), this.mario.getY(), null);
+        }
+        // draw  number of piece at the top right of the screen
+        g2.setFont(new Font("Arial", Font.PLAIN, 18));
+        g2.drawString("Piece restante : " + Piece.getNbPiece(), 520, 20);
+
+        System.out.println(xPos);
     }
 }

@@ -7,6 +7,7 @@ import javax.swing.ImageIcon;
 
 import jeu.Main;
 import objets.Objet;
+import objets.Piece;
 
 public class Personnage {
 
@@ -118,5 +119,14 @@ public class Personnage {
         if((this.x > objet.getX() - 10 && this.x < objet.getX() + objet.getLargeur() + 10)
                 || (this.x + this.largeur > objet.getX() - 10 && this.x + this.largeur < objet.getX() + objet.getLargeur() + 10)){return true;}
         else{return false;}
+    }
+
+    public boolean toucher(Objet objet){
+        if(this.x + this.largeur < objet.getX() || this.x > objet.getX() + objet.getLargeur() ||
+                this.y + this.hauteur < objet.getY() || this.y > objet.getY() + objet.getHauteur()){return false;}
+        else{
+            if(objet instanceof Piece){ Piece.setNbPiece();
+        }
+            return true;}
     }
 }
